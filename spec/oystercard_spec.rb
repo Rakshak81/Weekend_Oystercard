@@ -2,7 +2,9 @@ require './lib/oystercard.rb'
 
 describe Oystercard do
 
-  let (:station) { double :station }
+  let (:entry_station) { double :station }
+  let (:exit_station) { double :station }
+  let(:journey){ {entry_station: entry_station, exit_station: exit_station} }
   describe "#balance" do
     it "card has a balance" do
       expect(subject).to respond_to(:balance)
@@ -62,7 +64,7 @@ describe Oystercard do
 
     it "can touch in" do
     subject.top_up(5)
-      subject.touch_in(station)
+      subject.touch_in(entry_station)
       expect(subject).to be_in_journey
     end
 
@@ -72,8 +74,8 @@ describe Oystercard do
     
     it "it stores station" do
       subject.top_up(10)
-      subject.touch_in(station)
-      expect(subject.entry_station).to eq station
+      subject.touch_in(entry_station)
+      expect(subject.entry_station).to eq entry_station
     end
 
 
@@ -97,8 +99,21 @@ describe Oystercard do
 
     it "Can deduct fare when touch_out" do
       subject.top_up(5)
-      subject.touch_in(station)
-      expect {subject.touch_out}.to change{subject.balance}.by -1
+      subject.touch_in(entry_station)
+      expect {subject.touch_out(exit_station)}.to change{subject.balance}.by -1
+    end
+
+    it 'stores exit station' do
+      subject.top_up(10)
+      subject.touch_in(entry_station)
+      subject.touch_out(exit_station)
+      expect(subject.exit_station).to eq exit_station
+    end
+  end
+
+  describe '#journey_history' do
+    it "journey_history is empty by default" do
+      expect(subject.journey_history).to eq []
     end
   end
 end
