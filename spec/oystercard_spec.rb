@@ -115,6 +115,13 @@ describe Oystercard do
     it "journey_history is empty by default" do
       expect(subject.journey_history).to eq []
     end
+
+    it 'stores a journey' do
+      subject.top_up(50)
+      subject.touch_in(entry_station)
+      subject.touch_out(exit_station)
+      expect(subject.journey_history).to include journey
+    end
   end
 end
 
